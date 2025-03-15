@@ -1,0 +1,15 @@
+{
+  "name": "express-calculator-exercise",
+  "version": "1.0.0",
+  "description": "For this exercise, you will build an Express.js application that performs three statistical operations given an arbitrary amount of numbers:",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
