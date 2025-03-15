@@ -1,21 +1,47 @@
 const express = require("express");
 const ExpressError = require("./expressError");
-const { calculateMean } = require("./helperFunctions");
+const {
+  calculateMean,
+  calculateMedian,
+  calculateMode,
+  formatResponse,
+} = require("./helperFunctions");
 
 const app = express();
 
-app.get("/mean", (req, res, next) => {
-  // get the nums query parameter
+// Middleware to validate nums query parameter
+function validateNums(req, res, next) {
   const nums = req.query.nums;
-
-  // check if nums is provided
   if (!nums) {
     return next(new ExpressError("nums are required.", 400));
   }
+  req.nums = nums;
+  next();
+}
 
+// Define routes
+app.get("/mean", validateNums, (req, res, next) => {
   try {
-    const mean = calculateMean(nums);
-    res.json({ operation: "mean", value: mean });
+    const mean = calculateMean(req.nums);
+    res.json(formatResponse("mean", mean));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get("/median", validateNums, (req, res, next) => {
+  try {
+    const median = calculateMedian(req.nums);
+    res.json(formatResponse("median", median));
+  } catch (err) {
+    next(err);
+  }
+});
+
+app.get("/mode", validateNums, (req, res, next) => {
+  try {
+    const mode = calculateMode(req.nums);
+    res.json(formatResponse("mode", mode));
   } catch (err) {
     next(err);
   }
@@ -34,9 +60,13 @@ app.use((err, req, res, next) => {
   res.status(err.status || 500);
 
   return res.json({
-    error: err,
-    message: err.message,
+    error: {
+      message: err.message,
+      status: err.status,
+    },
   });
 });
 
-app.listen(3000);
+app.listen(3000, () => {
+  console.log("Server is running on port 3000");
+});
