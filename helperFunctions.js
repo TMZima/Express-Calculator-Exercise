@@ -42,7 +42,7 @@ function calculateMean(nums) {
   const parsedNums = parseNums(nums);
   const mean =
     parsedNums.reduce((acc, num) => acc + num, 0) / parsedNums.length;
-  return mean;
+  return parseFloat(mean.toFixed(2));
 }
 
 /**

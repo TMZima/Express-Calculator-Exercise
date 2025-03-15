@@ -1,0 +1,10 @@
+{
+  "operation": "all",
+  "mean": 3.29,
+  "median": 3,
+  "mode": [
+    3,
+    5
+  ],
+  "timestamp": "2025-03-15T22:46:20.300Z"
+}

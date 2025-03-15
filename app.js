@@ -1,4 +1,5 @@
 const express = require("express");
+const fs = require("fs");
 const ExpressError = require("./expressError");
 const {
   calculateMean,
@@ -16,6 +17,13 @@ function validateNums(req, res, next) {
     return next(new ExpressError("nums are required.", 400));
   }
   req.nums = nums;
+  next();
+}
+
+// Middleware to handle the save query parameter
+function handleSave(req, res, next) {
+  const save = req.query.save === "true";
+  req.save = save;
   next();
 }
 
@@ -46,6 +54,42 @@ app.get("/mode", validateNums, (req, res, next) => {
     next(err);
   }
 });
+
+app.get("/all", validateNums, handleSave, (req, res, next) => {
+  try {
+    const mean = calculateMean(req.nums);
+    const median = calculateMedian(req.nums);
+    const mode = calculateMode(req.nums);
+    const response = {
+      operation: "all",
+      mean,
+      median,
+      mode,
+    };
+    if (req.save) {
+      saveResult(response);
+    }
+    sendResponse(req, res, response);
+  } catch (err) {
+    next(err);
+  }
+});
+
+// Function to save result to a file with a timestamp
+function saveResult(result) {
+  const timestamp = new Date().toISOString();
+  const data = { ...result, timestamp };
+  fs.writeFileSync("results.json", JSON.stringify(data, null, 2));
+}
+
+// Function to send response based on Accept header
+function sendResponse(req, res, response) {
+  if (req.headers.accept === "text/html") {
+    res.send(`<pre>${JSON.stringify(response, null, 2)}</pre>`);
+  } else {
+    res.json(response);
+  }
+}
 
 /** Error handling middleware */
 
